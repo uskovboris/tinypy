@@ -297,11 +297,18 @@ def try_nud(t):
     while check(P.token,'except'):
         tok = P.token
         advance('except')
-        if not check(P.token,':'): a = expression(0)
-        else: a = Token(tok.pos,'symbol','None')
+        e = None
+
+        if not check(P.token,':'):
+            a = expression(0)
+        else:
+            a = Token(tok.pos,'symbol','None')
+        if check(P.token,'as'):
+            advance('as')
+            e = expression(0)
         advance(':')
         b = block()
-        items.append(Token(tok.pos,'except','except',[a,b]))
+        items.append(Token(tok.pos,'except','except',[a,b,e]))
     #commenting this out, i don't think this next bit is valid syntax??
     #if check(P.token,'else'):
         #tok = P.token
@@ -394,7 +401,7 @@ i_infix(30,infix_led,'or','|')
 i_infix(36,infix_led,'<<','>>')
 def i_terms(*vs):
     for v in vs: base_dmap[v] = {'lbp':0,'nud':itself}
-i_terms(')','}',']',';',':','nl','elif','else','True','False','None','name','string','number','indent','dedent','except')
+i_terms(')','}',']',';',':','nl','elif','else','True','False','None','name','string','number','indent','dedent','except', 'as')
 base_dmap['nl']['val'] = 'nl'
 
 def gmap(t,v):
